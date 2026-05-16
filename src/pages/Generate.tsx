@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Shuffle, ExternalLink, CheckCircle, BookmarkCheck, BookOpen } from 'lucide-react'
 import { useProblems } from '../hooks/useProblems'
@@ -18,6 +18,11 @@ const Generate: React.FC = () => {
   const [onlyReview, setOnlyReview] = useState(false)
   const [onlyNotStarted, setOnlyNotStarted] = useState(false)
   const [generated, setGenerated] = useState<Problem | null>(null)
+  const resultRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (generated) resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [generated])
 
   const toggleDifficulty = (d: Difficulty) => {
     setDifficulties((prev) => {
@@ -200,7 +205,7 @@ const Generate: React.FC = () => {
         </div>
 
         {/* Main Area */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2" ref={resultRef}>
           {/* Generate Button */}
           <button
             onClick={handleGenerate}
