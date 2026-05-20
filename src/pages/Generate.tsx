@@ -17,6 +17,7 @@ const Generate: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set())
   const [onlyReview, setOnlyReview] = useState(false)
   const [onlyNotStarted, setOnlyNotStarted] = useState(false)
+  const [onlyCompleted, setOnlyCompleted] = useState(false)
   const [generated, setGenerated] = useState<Problem | null>(null)
   const resultRef = useRef<HTMLDivElement>(null)
 
@@ -53,7 +54,8 @@ const Generate: React.FC = () => {
       const up = userProblems.get(p.id)
       const status: ProblemStatus = up?.status ?? 'Not Started'
 
-      if (!includeCompleted && status === 'Completed') return false
+      if (onlyCompleted && status !== 'Completed') return false
+      if (!onlyCompleted && !includeCompleted && status === 'Completed') return false
       if (!difficulties.has(p.difficulty)) return false
       if (selectedCategories.size > 0 && !selectedCategories.has(p.category)) return false
       if (onlyReview && status !== 'Review') return false
@@ -125,7 +127,7 @@ const Generate: React.FC = () => {
                 checked={onlyReview}
                 onChange={(e) => {
                   setOnlyReview(e.target.checked)
-                  if (e.target.checked) setOnlyNotStarted(false)
+                  if (e.target.checked) { setOnlyNotStarted(false); setOnlyCompleted(false) }
                 }}
                 className="cursor-pointer"
               />
@@ -143,12 +145,30 @@ const Generate: React.FC = () => {
                 checked={onlyNotStarted}
                 onChange={(e) => {
                   setOnlyNotStarted(e.target.checked)
-                  if (e.target.checked) setOnlyReview(false)
+                  if (e.target.checked) { setOnlyReview(false); setOnlyCompleted(false) }
                 }}
                 className="cursor-pointer"
               />
               <span className="text-sm text-[#9BA3B0] group-hover:text-[#E8EAF0] transition-colors">
                 Only Not Started
+              </span>
+            </label>
+          </div>
+
+          {/* Only Completed */}
+          <div className="mb-4 pb-4 border-b border-[#1E2128]">
+            <label className="flex items-center gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={onlyCompleted}
+                onChange={(e) => {
+                  setOnlyCompleted(e.target.checked)
+                  if (e.target.checked) { setOnlyReview(false); setOnlyNotStarted(false) }
+                }}
+                className="cursor-pointer"
+              />
+              <span className="text-sm text-[#9BA3B0] group-hover:text-[#E8EAF0] transition-colors">
+                Only Completed
               </span>
             </label>
           </div>
